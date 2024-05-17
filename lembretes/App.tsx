@@ -1,4 +1,5 @@
-import { FlatList, StyleSheet, TextInput, Text, View, Pressable } from 'react-native';
+import { FlatList, StyleSheet, TextInput, Text, View, Pressable, Alert } from 'react-native';
+import { AntDesign } from '@expo/vector-icons'
 import SocialMedia from './components/SocialMedia'
 
 import {
@@ -26,6 +27,26 @@ export default function App() {
     setLembrete('')
   }
 
+  const remover = (lembrete: Lembrete) => {
+    Alert.alert("Remover Lembrete", `Tem certeza que deseja remover o lembrete: ${lembrete.texto}?`, [
+      {
+        text: 'Cancelar',
+        style: 'cancel'
+      },
+      {
+        text: 'Remover',
+        style: 'destructive',
+        onPress: () => {
+          setLembretes((lembretesAtual => (
+            lembretesAtual.filter((index) => index.id != lembrete.id)
+            //filtragem de elementos usando o filter
+            //retorna uma lista com os elementos que satisfazem a condição da callback
+          ))) 
+        }
+      }
+    ])
+    
+  }
 
   return (
     <View style={styles.container}>
@@ -52,8 +73,24 @@ export default function App() {
         style={styles.list}
         data={lembretes}
         renderItem={(lembrete) => (
-          <View>
-            <Text style={styles.listItem}>{lembrete.item.texto}</Text>
+          <View style={styles.listItem}>
+            <Text style={styles.listItemText}>{lembrete.item.texto}</Text>
+            <View style={styles.listItemButtons}>
+            <Pressable
+              onPress={() => remover(lembrete.item)}
+            >
+              <AntDesign
+                name="delete"
+                size={24}
+              />
+            </Pressable>
+            <Pressable>
+              <AntDesign
+                name="edit"
+                size={24}
+              />
+            </Pressable>
+            </View>
           </View>
         )}
       />
@@ -101,10 +138,23 @@ const styles = StyleSheet.create({
     borderRadius: 4
   },
   listItem: {
+    borderRadius: 6,
     borderBottomWidth: 1,
     borderBottomColor: 'gray',
+    backgroundColor: '#fbebfa',
     padding: 12,
     textAlign: 'center',
-    margin: 10
+    margin: 10,
+    flexDirection: 'row',
+    alignItems: 'center'
+  },
+  listItemText: {
+    width: '70%',
+    textAlign: 'center'
+  },
+  listItemButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    width: '30%'
   }
 });
